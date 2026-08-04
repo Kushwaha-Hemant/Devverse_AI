@@ -1,0 +1,21 @@
+{
+  // Targets the EXISTING worker behind devverse-ai.kushwaha-hemant.workers.dev
+  // (the URL baked into src/app/layout.tsx as the metadata base). Deploying
+  // updates that worker in place — it does not create a new project, and it
+  // does not touch any other project on the account.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "devverse-ai",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-30",
+  // nodejs_compat is required by the OpenNext adapter; global_fetch_strictly_public
+  // makes server-side fetches to our own domain go back out through the edge
+  // rather than short-circuiting internally.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
