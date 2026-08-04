@@ -7,6 +7,19 @@ object you click, and each object opens a real section of the site.
 **Theme:** Neo Cyber Developer Workspace — dark, glassmorphic, aurora gradients,
 neon accents.
 
+**Live:** [devverse-ai.kushwaha-hemant.workers.dev](https://devverse-ai.kushwaha-hemant.workers.dev)
+
+![The cinematic entry gate — boot log, particle flight, then ENTER](docs/landing.jpg)
+
+*The entry sequence: a boot log ticks through, the starfield accelerates into a
+warp, and ENTER drops you into the room.*
+
+![The 3D workspace — desk, monitors, roadmap board, server tower and dock](docs/workspace.jpg)
+
+*The workspace itself. Every object is clickable — the whiteboard opens the
+roadmap, the monitor a live terminal, the robot the AI assistant — and the dock
+along the bottom mirrors all eight hotspots for keyboard and screen-reader use.*
+
 ---
 
 ## Stack
