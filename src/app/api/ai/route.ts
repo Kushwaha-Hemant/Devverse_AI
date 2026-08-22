@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { clientKey, rateLimit, rateLimitHeaders } from "@/lib/rateLimit";
 import { profile } from "@/content/profile";
 import { projects } from "@/content/projects";
 import { skillGroups } from "@/content/skills";
@@ -144,12 +145,48 @@ function fallbackReply(question: string): string {
   return `I can answer questions about ${profile.name}'s projects, skills, background and how to contact him. For anything else, email ${profile.email}.`;
 }
 
+/** Requests per IP per window. Generous for a human, ruinous for a script. */
+const RATE_LIMIT = 12;
+const RATE_WINDOW_MS = 60_000;
+
+/** Ceilings on what reaches a paid, per-token API. */
+const MAX_MESSAGES = 24;
+const MAX_CHARS_PER_MESSAGE = 2_000;
+const MAX_TOTAL_CHARS = 8_000;
+
 export async function POST(req: Request) {
+  // This route spends money on every call and has no auth by design, so the
+  // cost ceiling has to come from here.
+  const limit = rateLimit(clientKey(req), {
+    limit: RATE_LIMIT,
+    windowMs: RATE_WINDOW_MS,
+  });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many questions in a short time. Try again shortly." },
+      { status: 429, headers: rateLimitHeaders(limit) },
+    );
+  }
+
   let messages: Msg[] = [];
   try {
     ({ messages = [] } = (await req.json()) as { messages?: Msg[] });
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  if (!Array.isArray(messages) || messages.length > MAX_MESSAGES) {
+    return NextResponse.json({ error: "Too many messages." }, { status: 400 });
+  }
+
+  // Capping the count alone is not enough: eight messages of a megabyte each
+  // still bills as a megabyte.
+  const totalChars = messages.reduce((n, m) => n + (m?.content?.length ?? 0), 0);
+  if (
+    totalChars > MAX_TOTAL_CHARS ||
+    messages.some((m) => (m?.content?.length ?? 0) > MAX_CHARS_PER_MESSAGE)
+  ) {
+    return NextResponse.json({ error: "Message is too long." }, { status: 413 });
   }
 
   const last = [...messages].reverse().find((m) => m.role === "user");
