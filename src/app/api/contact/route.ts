@@ -43,11 +43,14 @@ export async function POST(req: Request) {
 
   // Be explicit rather than pretending a message was delivered.
   if (!apiKey) {
-    console.info("[contact] Resend not configured. Submission:", {
-      name,
-      email,
-      message,
-    });
+    // Deliberately does not log name, email or message. Cloudflare Workers logs
+    // are retained and readable by anyone with dashboard access, and a contact
+    // form is exactly where personal data arrives — writing it there turns a
+    // missing API key into a privacy problem. Only the shape is recorded.
+    console.info(
+      "[contact] Resend not configured; submission dropped.",
+      { messageLength: message.length },
+    );
     return NextResponse.json({
       message:
         `Email delivery isn't configured on this deployment yet, so nothing was sent. ` +
