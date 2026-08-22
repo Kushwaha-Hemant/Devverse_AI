@@ -1,5 +1,8 @@
 # DevVerse AI
 
+[![CI](https://github.com/Kushwaha-Hemant/Devverse_AI/actions/workflows/ci.yml/badge.svg)](https://github.com/Kushwaha-Hemant/Devverse_AI/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A 3D interactive developer portfolio for **Hemant Kushwaha**. Instead of a page
 you scroll, the landing is a workspace you explore: the camera flies to whatever
 object you click, and each object opens a real section of the site.
